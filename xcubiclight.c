@@ -144,7 +144,7 @@ static void parse_opts(int argc, char** argv)
 				continue;
 			} else if(*(arg + 1)) {
 				handle_opt(*arg, arg + 1);
-				break;;
+				break;
 			}
 
 			if(++i >= argc)
@@ -318,15 +318,19 @@ static int find_device_output(struct backlight* bt, xcb_window_t root)
 			if(!check_output_name(outs[i], outname))
 				continue;
 			if(get_backlight(bt, outs[i]))
-				return 1;
+				break;
 			die("no backlight on %s", outname);
 		} else {
 			if(get_backlight(bt, outs[i]))
-				return 1;
+				break;
 		}
 	}
 
-	return 0;
+	int ret = (i < reply->num_outputs);
+
+	free(reply);
+
+	return ret;
 }
 
 static void find_device(struct backlight* bt)
@@ -340,10 +344,12 @@ static void find_device(struct backlight* bt)
 		xcb_window_t root = screen->root;
 
 		if(find_device_output(bt, root))
-			break;
+			return;
 
 		xcb_screen_next(&iter);
 	}
+
+	die("no backlit outputs found");
 }
 
 static void set_backlight(struct backlight* bt, int level)
