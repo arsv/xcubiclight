@@ -1,0 +1,68 @@
+.TH xcubiclight 1
+'''
+.SH NAME
+xcubiclight \- X backlight brightness adjustment tool with cubic scale
+'''
+.SH SYNOPSIS
+\fBxcubiclight\fR [\fIoptions\fR] [-\fBidq\fR]
+.br
+\fBxcubiclight\fR [\fIoptions\fR] -[\fBse\fR] \fIvalue\fR
+'''
+.SH DESCRIPTION
+This tool is intended for backlight devices with large raw adjustment range
+and linear brightness response. The tool switches backlight brightness
+between reasonably small number (20 by default) of positions chosen so
+that the steps between positions are visually more or less equal.
+.P
+Typical usage should be with \fB-i\fR or \fB-d\fR options to increase
+or decrease brightness. With no options given, the tool reports current
+brightness value.
+'''
+.SH OPTIONS
+.IP "\fB-i\fR" 4
+Increase brightness one notch.
+.IP "\fB-d\fR" 4
+Decrease brightness one notch.
+.IP "\fB-q\fR" 4
+Show the scale being used.
+.IP "\fB-s\fR \fIvalue\fR" 4
+Switch to given position on the scale.
+.IP "\fB-e\fR \fIvalue\fR" 4
+Set device brightness to a given value.
+.IP "\fB-z\fR" 4
+Allow decreasing brightness to zero/minimum.
+'''
+.SH BACKGROUND
+Some backlight devices come with adjustment ranges as large as 0..900,
+making it impractical to cycle through all possible values with hotkeys
+or keyboard shortcuts. Tools like \fBxbacklight\fR(1) allow adjusting
+brightness in fixed steps, however equal changes on device scale are
+not perceived as equal. The steps are too large on the lower end and
+unnecessary small when the brightness is high.
+.P
+Human perception of brightness is non-linear, with most sources quoting
+cubic root type dependency. Cubic scale compensates for non-linearity
+with non-equal steps in brightness values, making it possible to adjust
+backlight across the whole range with reasonable amount of keystrokes
+without losing precision at the lower end of the scale.
+.P
+Not all devices are like this. Some come with short ranges like 0..20
+and non-linear mapping presumably hard-coded somewhere. These work just
+fine with \fBxbacklight\fR.
+'''
+.SH NOTES
+The minimum brightness value seems to be 0 for all devices, however
+it is specified explicitly at protocol level, so the tool reports it.
+Cubic scale positions are always 0-based.
+.P
+Brightness 0 often means backlight off, a rather unexpected outcome
+for a decrease brigthness command. To avoid confusion, it must be
+enabled explicitly with \fB-z\fR.
+.P
+Attempts to decrease brightness below minimun or increase it above maximum
+are silently ignored.
+'''
+.SH SEE ALSO
+\fBxrandr\fR(1), specifically --prop and --set options;
+.br
+\fBxbacklight\fR(1), similar tool with linear scale
