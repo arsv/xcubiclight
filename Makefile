@@ -4,7 +4,7 @@ LIBS = -lxcb-randr -lxcb -lm
 
 prefix = /usr
 bindir = $(prefix)/bin
-man1dir = $(prefix)/share/man1
+man1dir = $(prefix)/share/man/man1
 
 xcubiclight: xcubiclight.o
 
