@@ -1,0 +1,16 @@
+Backlight adjustment tool similar to xbacklight but with cubic scale.
+
+This is intended for backlight devices with large raw adjustment range
+(0..900, intel_backlight nodes in /sys/class/backlight) and linear
+brightness response. The tool switches backlight brightness between
+reasonably small number (20 by default) of positions chosen to compensate
+for non-linearity in human perception, making the steps between positions
+visually more or less equal.
+
+Not for devices with small ranges like 0..15 (acpi_backlight and such).
+Use xbacklight with those instead.
+
+
+See the following on why the scale is chosen to be cubic:
+https://en.wikipedia.org/wiki/Lightness
+http://warrenmars.com/photography/technical/resolution/human_perception.htm
