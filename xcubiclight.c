@@ -19,7 +19,7 @@ static const char self[] = "xcubiclight";
 
 int action = SHOW;
 char* display = NULL;
-int devindex = 0;
+char* outname = NULL;
 int notches = 20;
 int userval = 0;
 short tozero = 0;
@@ -114,7 +114,7 @@ static void handle_opt(int c, char* optarg)
 		case 'e': action = SETLIN; userval = atoi(optarg); break;
 		case 'q': action = SCALE; break;
 		case 'n': notches = atoi(optarg); break;
-		case 'o': devindex = atoi(optarg); break;
+		case 'o': outname = optarg; break;
 		case 'z': tozero = 1; break;
 	}
 }
@@ -276,6 +276,27 @@ out:
 	return 0;
 }
 
+static int check_output_name(xcb_randr_output_t oid, const char* xname)
+{
+	xcb_randr_get_output_info_cookie_t cookie;
+	xcb_randr_get_output_info_reply_t* reply;
+	xcb_generic_error_t* error = NULL;
+	
+	cookie = xcb_randr_get_output_info(conn, oid, 0);
+	reply = xcb_randr_get_output_info_reply(conn, cookie, &error);
+
+	if(error || !reply)
+		return 0;
+
+	char* oname = (char*)xcb_randr_get_output_info_name(reply);
+	int onamelen = xcb_randr_get_output_info_name_length(reply);
+
+	int ret = !strncmp(xname, oname, onamelen);
+
+	free(reply);
+	return ret;
+}
+
 static int find_device_output(struct backlight* bt, xcb_window_t root)
 {
 	xcb_randr_get_screen_resources_cookie_t cookie;
@@ -292,9 +313,18 @@ static int find_device_output(struct backlight* bt, xcb_window_t root)
 	outs = xcb_randr_get_screen_resources_outputs(reply);
 	int i;
 
-	for(i = 0; i < reply->num_outputs; i++)
-		if(get_backlight(bt, outs[i]))
-			return 1;
+	for(i = 0; i < reply->num_outputs; i++) {
+		if(outname) {
+			if(!check_output_name(outs[i], outname))
+				continue;
+			if(get_backlight(bt, outs[i]))
+				return 1;
+			die("no backlight on %s", outname);
+		} else {
+			if(get_backlight(bt, outs[i]))
+				return 1;
+		}
+	}
 
 	return 0;
 }

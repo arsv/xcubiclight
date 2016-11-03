@@ -31,6 +31,8 @@ Switch to given position on the scale.
 Set device brightness to a given value.
 .IP "\fB-z\fR" 4
 Allow decreasing brightness to zero/minimum.
+.IP "\fB-o \fIname\fR" 4
+Select output to use. Run \fBxrandr\fR(1) to see available names.
 '''
 .SH BACKGROUND
 Some backlight devices come with adjustment ranges as large as 0..900,
@@ -61,6 +63,9 @@ enabled explicitly with \fB-z\fR.
 .P
 Attempts to decrease brightness below minimun or increase it above maximum
 are silently ignored.
+.P
+Without \fB-o\fR, the first output with backlight properties is selected.
+If there are two or more active outputs, use \fB-o\fR to avoid ambiguity.
 '''
 .SH SEE ALSO
 \fBxrandr\fR(1), specifically --prop and --set options;
